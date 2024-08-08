@@ -3,10 +3,11 @@ package com.pablocastillo.webapp.biblioteca.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.stereotype.Service;
 import com.pablocastillo.webapp.biblioteca.model.Empleado;
 import com.pablocastillo.webapp.biblioteca.repository.EmpleadoRepository;
 
+@Service
 public class EmpleadoService implements IEmpleadoService {
 
 
