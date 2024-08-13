@@ -33,4 +33,18 @@ public class EmpleadoService implements IEmpleadoService {
     public void eliminarEmpleado(Empleado empleado) {
         empleadoRepository.delete(empleado);
     }
+
+    @Override
+    public Boolean verificarDpiDuplicado(Empleado empleado) {
+        Boolean flag = Boolean.FALSE;
+        List<Empleado> empleados = listarEmpleados();
+
+        for (Empleado e : empleados) {
+            if(e.getDpi().equals(empleado.getDpi()) && !e.getId().equals(empleado.getId())){
+                flag = Boolean.TRUE;
+
+            }
+        }
+        return flag;
+    }
 }
