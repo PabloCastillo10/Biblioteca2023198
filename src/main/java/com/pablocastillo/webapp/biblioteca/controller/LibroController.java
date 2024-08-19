@@ -62,7 +62,7 @@ public class LibroController {
             libroViejo.setAutor(libroNuevo.getAutor());
             libroViejo.setCategoria(libroNuevo.getCategoria());
             libroViejo.setCluster(libroNuevo.getCluster());
-            libroViejo.setDisponibilidad(libroNuevo.getDisponibilidad());
+            libroViejo.setDisponibilidad(true);
             libroViejo.setEditorial(libroNuevo.getEditorial());
             libroViejo.setIsbn(libroNuevo.getIsbn());
             libroViejo.setNombre(libroNuevo.getNombre());

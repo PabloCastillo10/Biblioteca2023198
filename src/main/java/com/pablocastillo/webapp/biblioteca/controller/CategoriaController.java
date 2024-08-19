@@ -55,11 +55,17 @@ public class CategoriaController {
     @PostMapping("/categoria")
     public ResponseEntity<Map<String, String>> agregarCategoria(@RequestBody Categoria categoria){
         Map<String, String> response = new HashMap<>();
-         try { //BIEN
-            categoriaService.guardarCategoria(categoria);
-            response.put("message", "Categoria agregada con éxito");
-            return ResponseEntity.ok(response);
-         } catch (Exception e) { //MAL
+         try { 
+            if(!categoriaService.verificarCategoriaDuplicada(categoria)) {
+                categoriaService.guardarCategoria(categoria);
+                response.put("message", "Categoria agregada con exito");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("message", "error");
+                response.put("err", "Se esta duplicando la categoria");
+                return ResponseEntity.badRequest().body(response);
+            }
+         } catch (Exception e) { 
             response.put("message", "Error");
             response.put("err", "Hubo un error al crear la categoria");
             return ResponseEntity.badRequest().body(response);
@@ -73,9 +79,16 @@ public class CategoriaController {
         try {
             Categoria categoriaVieja =  categoriaService.busCategoriaPorId(id);
             categoriaVieja.setNombreCategoria(categoriaNueva.getNombreCategoria());
-            categoriaService.guardarCategoria(categoriaVieja);
-            response.put("message", "La categoria fue editada con exito");
-            return ResponseEntity.ok(response);
+
+            if(!categoriaService.verificarCategoriaDuplicada(categoriaVieja)) {
+                categoriaService.guardarCategoria(categoriaVieja);
+                response.put("message", "La categoria se ha modificado con exito");
+                return ResponseEntity.ok(response);
+            }else{
+                response.put("message", "error");
+                response.put("err", "Se esta duplicando la categoria");
+                return ResponseEntity.badRequest().body(response);
+            }
         } catch (Exception e) {
             response.put("message", "Error");
             response.put("err", "Hubo un error al editar la categoria");

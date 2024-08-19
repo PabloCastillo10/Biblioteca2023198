@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pablocastillo.webapp.biblioteca.model.Libro;
 import com.pablocastillo.webapp.biblioteca.model.Prestamo;
 import com.pablocastillo.webapp.biblioteca.service.PrestamoService;
+import com.pablocastillo.webapp.biblioteca.service.LibroService;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +30,9 @@ public class PrestamoController {
 
     @Autowired
     PrestamoService prestamoService;
+
+    @Autowired
+    LibroService libroService;
 
     @GetMapping("/prestamos")
     public ResponseEntity<?> listarPrestamos() {
@@ -55,14 +60,38 @@ public class PrestamoController {
     public ResponseEntity<Map<String,String>> agregarPrestamo(@RequestBody Prestamo prestamo) {
     Map<String, String> response = new HashMap<>();
     try {
-        prestamoService.guardarPrestamo(prestamo);
-        response.put("message", "Prestamo agregado con éxito");
-        return ResponseEntity.ok(response);
-    } catch (Exception e) {
-        response.put("message", "Error");
-        response.put("err", "Hubo un error al agregar el prestamo");
-        return ResponseEntity.badRequest().body(response);
-    }
+
+        if(prestamo.getLibros().size() > 3) {
+            response.put("message", "No se puede pedir mas de 3 libros por prestamo echo ");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        for (Libro libro : prestamo.getLibros()) {
+            Libro libroVigente = libroService.buscarLibroPorId(libro.getId());
+            if (libroVigente == null || !libroVigente.getDisponibilidad()) {
+                response.put("message", "El libro con el Id " + libro.getId() + " no se encuentra disponible.");
+                return ResponseEntity.badRequest().body(response);
+            }
+        }
+
+        if (prestamoService.PrestamoVigente(prestamo.getCliente().getDpi())) {
+            response.put("message", "El cliente tiene un prestamo vigente");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        for (Libro libro : prestamo.getLibros()) {
+            libro.setDisponibilidad(false);
+            libroService.guardarLibro(libro);
+        }
+            prestamoService.guardarPrestamo(prestamo);
+            response.put("message", "Prestamo agregado con éxito");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("message", "Error");
+            response.put("err", "Hubo un error al agregar el prestamo");
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
     @PutMapping("/prestamo")
@@ -70,12 +99,21 @@ public class PrestamoController {
         Map<String, String> response = new HashMap<>();
         try {
             Prestamo prestamo = prestamoService.buscarPrestamoPorId(id);
+            boolean cambiarDisponibilidad = prestamo.getVigencia() && !prestamoNuevo.getVigencia();
             prestamo.setFechaDePrestamo(prestamoNuevo.getFechaDePrestamo());
             prestamo.setFechaDeDevolucion(prestamoNuevo.getFechaDeDevolucion());
             prestamo.setVigencia(prestamoNuevo.getVigencia());
             prestamo.setEmpleado(prestamoNuevo.getEmpleado());
             prestamo.setCliente(prestamoNuevo.getCliente());
+            prestamo.setLibros(prestamoNuevo.getLibros());
             prestamoService.guardarPrestamo(prestamo);
+
+            if (cambiarDisponibilidad) {
+                for (Libro libro : prestamo.getLibros()) {
+                    libro.setDisponibilidad(true);
+                    libroService.guardarLibro(libro);
+                }
+            }
             response.put("message", "!Prestamo modificado con éxito¡");
             return ResponseEntity.ok(response);
         } catch (Exception e) {

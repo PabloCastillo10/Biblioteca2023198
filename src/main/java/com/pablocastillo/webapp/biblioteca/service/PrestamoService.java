@@ -34,4 +34,16 @@ public class PrestamoService implements IPrestamoService {
         prestamoRepository.delete(prestamo);
     }
     
+
+    @Override
+    public boolean PrestamoVigente(Long dpi) {
+        List<Prestamo> todosPrestamos = prestamoRepository.findAll();
+
+        for (Prestamo prestamo : todosPrestamos) {
+            if (prestamo.getCliente() != null && prestamo.getCliente().getDpi().equals(dpi) && prestamo.getVigencia()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
