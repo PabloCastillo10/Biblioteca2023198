@@ -15,6 +15,7 @@ import com.pablocastillo.webapp.biblioteca.model.Prestamo;
 import com.pablocastillo.webapp.biblioteca.service.PrestamoService;
 import com.pablocastillo.webapp.biblioteca.service.LibroService;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 @RestController
 @RequestMapping("")
+@CrossOrigin(value = "http://127.0.0.1:5500")
 public class PrestamoController {
 
     @Autowired

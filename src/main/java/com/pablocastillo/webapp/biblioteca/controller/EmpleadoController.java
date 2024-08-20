@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.pablocastillo.webapp.biblioteca.model.Empleado;
 import com.pablocastillo.webapp.biblioteca.service.EmpleadoService;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 @Controller
 @RestController
 @RequestMapping("")
+@CrossOrigin(value = "http://127.0.0.1:5500")
 public class EmpleadoController {
 
 
