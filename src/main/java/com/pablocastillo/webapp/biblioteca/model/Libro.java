@@ -28,4 +28,10 @@ public class Libro {
     @ManyToOne
     private Categoria categoria;
 
+    @Override
+    public String toString() {
+        return nombre;
+    }
+
+
 }
