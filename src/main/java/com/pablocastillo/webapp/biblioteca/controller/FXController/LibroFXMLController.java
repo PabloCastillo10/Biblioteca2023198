@@ -87,21 +87,32 @@ public class LibroFXMLController implements Initializable {
         colCategoria.setCellValueFactory(new PropertyValueFactory<Libro, Categoria>("categoria"));
     }
 
+    
+
     public void cargarTextField(){
         Libro libro = (Libro) tblLibros.getSelectionModel().getSelectedItem();
         if (libro != null) {
             tfId.setText(Long.toString(libro.getId()));
             tfAutor.setText(libro.getAutor());
             tfCluster.setText(libro.getCluster());
-            cmbDisponibilidad.getItems().add("Disponible");
-            cmbDisponibilidad.getItems().add("No disponible");
+            
+            
+            cmbDisponibilidad.getItems().clear();
+            cmbDisponibilidad.getItems().addAll("Disponible", "No disponible");
+            
+           
+            if (libro.getDisponibilidad()) {
+                cmbDisponibilidad.getSelectionModel().select("Disponible");
+            } else {
+                cmbDisponibilidad.getSelectionModel().select("No disponible");
+            }
+    
             tfEditorial.setText(libro.getEditorial());
             tfIsbn.setText(libro.getIsbn());
             tfNombre.setText(libro.getNombre());
             tfNumEs.setText(libro.getNumeroEstanteria());
             tfSinopsis.setText(libro.getSinopsis());
-            cmbCategorias.getSelectionModel().select(0);
-            
+            cmbCategorias.getSelectionModel().select(libro.getCategoria());  
         }
     }
 
@@ -126,19 +137,18 @@ public class LibroFXMLController implements Initializable {
         Libro libro = new Libro();
         libro.setAutor(tfAutor.getText());
         libro.setCluster(tfCluster.getText());
-        libro.setDisponibilidad((String)cmbDisponibilidad.getSelectionModel().getSelectedItem() == "Disponible" ? true : false);
+        libro.setDisponibilidad(cmbDisponibilidad.getSelectionModel().getSelectedItem() == "Disponible" ? true : false);
         libro.setEditorial(tfEditorial.getText());
         libro.setIsbn(tfIsbn.getText());
         libro.setNombre(tfNombre.getText());
         libro.setSinopsis(tfSinopsis.getText());
         Categoria categoria = (Categoria) cmbCategorias.getSelectionModel().getSelectedItem();
         libro.setCategoria(categoria);
-
         libroService.guardarLibro(libro);
         cargarDatos();
         limpiarTextField();
     }
-
+        
     public void editarLibro() {
         Libro libro = libroService.buscarLibroPorId(Long.parseLong(tfId.getText()));
         libro.setAutor(tfAutor.getText());
